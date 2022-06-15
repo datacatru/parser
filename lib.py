@@ -28,19 +28,17 @@ def extract_ym(page_content):
 
 # получаем ссылки на странице по условиям (на выходе множество)
 def get_links_on_page(page_content, domain):
-    all_pages = set()
     # тут список страниц для обхода
     uniq_page = set()
     soup = BeautifulSoup(page_content, 'html.parser')
     # цикл и условия добавления страниц в список uniq_page
     for link in soup.find_all('a'):
-        if len(uniq_page) < 2:
-            url = link.get('href')
-            if url:
-                url = url.split('#')[0]
-            if url:
-                if domain in url:
-                    url = url.replace(domain, '')
+        url = link.get('href')
+        if url:
+            url = url.split('#')[0]
+        if url:
+            if domain in url: # пример с kokocgroup - домена может не быть в урле, что тогда?
+                url = url.replace(domain, '')
             if url.startswith('http') or url.startswith('mail') or url.startswith('tel'):
                 continue
             uniq_page.add(url)
