@@ -1,8 +1,9 @@
-from lib import get_links_on_page,get_page_content,extract_gtm, extract_ym
-import xlsxwriter
-import pandas
+from lib import get_links_on_page,get_page_content,extract_gtm, extract_ym,do_excel
+import sys
 
-domain = 'https://medicinadeti.ru/'
+if len(sys.argv) != 2:
+    print("Введите url")
+domain = sys.argv[1]
 page_content = get_page_content(domain)
 main_gtm = extract_gtm(page_content)
 main_ym = extract_ym(page_content)
@@ -14,17 +15,9 @@ result = {}
 for i in pages:
     if main_gtm or main_ym: # не корректное условие, что если ни того ни другого? Или только одно?
         result[i] = main_gtm, main_ym
-print(result)
+do_excel(result)
 
-# Делаем DataFrame
-df = pandas.DataFrame.from_dict(result,'index').reset_index()
-df.columns = ['PageUrl', 'GTM', 'YM']
-print(df)
 
-# Сохраняем в excel
-writer = pandas.ExcelWriter('parser.xlsx', engine='xlsxwriter')
-df.to_excel(writer)
-writer.save()
 
 '''
 попытки получить все страницы сайта
@@ -53,6 +46,14 @@ if len(all_pages)<15:
         for url in pages:
             all_pages.add(url) # для каждого урл из множества pages добавить элемент в all_pages
 print(all_pages)
+
+вопросы:
++ по умолчанию инициализируется main файл?
++ как массово закоментить? ctr + /
+- парсинг xml или обход всего сайта - не получилось
+если по логике с множеством - наталкиваюсь на то, что с новой страницы грузятся те же самые урлы
+и я не поняла, как его заставить получать новые ссылки. 
++ реадми зачем?
 '''
 
 
